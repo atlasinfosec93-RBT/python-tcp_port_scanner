@@ -41,6 +41,9 @@ if target_ports2 == "y":
             print(f"[+] Port {port} is open.")
         else:
             print(f"[-] Port {port} is unreachable.")
+        service_name = socket.getservbyport(port, "tcp")
+        if service_name:
+            print(f"    Service: {service_name}")
 
         # Close the socket before moving to the next port
         sock.close()
@@ -70,5 +73,14 @@ elif target_ports2 == "n":
         else:
             print(f"[-] Port {port} is unreachable.")
 
+        # Get the service name for the port
+        try:
+            service_name = socket.getservbyport(port, "tcp")
+            print(f"    Service: {service_name}")
+        except OSError:
+            print("    Service: Unknown")
+
         # Close the socket
         sock.close()
+
+        
