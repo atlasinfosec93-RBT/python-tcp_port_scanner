@@ -94,6 +94,6 @@ This project is intended for educational purposes only. Only scan systems that y
 
 ## Author
 
-**Fouad (@de4ault.93)**
+** (@de4ault.93)**
 
-Learning Python, networking, Linux, and ethical hacking one project at a time.
+stay focused
