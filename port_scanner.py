@@ -4,21 +4,47 @@ import time
 # ==========================================
 #           TCP PORT SCANNER
 # ==========================================
+
 print("=" * 40)
 print("        TCP PORT SCANNER")
 print("      Made by @de4ault.93")
 print("=" * 40)
 
 # Ask the user for the target IP address
-Target_ip = input("Target IP: ")
+target_ip = input("Target IP: ")
 
 # Ask if the user wants to scan common ports
-target_ports2 = input("Scan famous ports? (y/n): ")
+scan_choice = input("Scan famous ports? (y/n): ").lower()
 
-# If the user chose to scan common ports
-if target_ports2 == "y":
 
-    # List of the most common TCP ports
+def scan_port(target_ip, port):
+    """
+    Scans a single TCP port and prints the result.
+    """
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(1)
+
+    result = sock.connect_ex((target_ip, port))
+
+    if result == 0:
+        print(f"[+] Port {port} is OPEN")
+
+        try:
+            service = socket.getservbyport(port, "tcp")
+        except OSError:
+            service = "Unknown"
+
+        print(f"    Service: {service}")
+
+    else:
+        print(f"[-] Port {port} is closed")
+
+    sock.close()
+
+
+if scan_choice == "y":
+
     famous_ports = [
         21, 22, 23, 25,
         53, 80, 110, 111,
@@ -26,52 +52,29 @@ if target_ports2 == "y":
         443, 993, 995
     ]
 
-    # Loop through every port in the list
+    start = time.time()
+
     for port in famous_ports:
+        scan_port(target_ip, port)
 
-        # Create a new socket for this port
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
+    end = time.time()
 
-        # Try connecting to the target IP on the current port
-        result = sock.connect_ex((Target_ip, port))
+    print(f"\nScan completed in {end - start:.2f} seconds.")
 
-        # If result is 0, the port is open
-        if result == 0:
-            print(f"[+] Port {port} is open.")
-        else:
-            print(f"[-] Port {port} is unreachable.")
-        service_name = socket.getservbyport(port, "tcp")
-        if service_name:
-            print(f"    Service: {service_name}")
+elif scan_choice == "n":
 
-        # Close the socket before moving to the next port
-        sock.close()
-
-        # Close the socket before moving to the next port
-        sock.close()
-
-# If the user wants to choose their own ports
-elif target_ports2 == "n":
-
-    # Ask for ports separated by commas
     input_ports = input("Enter ports to scan (comma-separated): ")
 
-    # Convert the input into a list of integers
     ports = [int(port.strip()) for port in input_ports.split(",")]
 
-    # Loop through every chosen port
+    start = time.time()
+
     for port in ports:
+        scan_port(target_ip, port)
 
-        # Create a new socket for this port
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
+    end = time.time()
 
-        # Attempt a TCP connection
-        result = sock.connect_ex((Target_ip, port))
+    print(f"\nScan completed in {end - start:.2f} seconds.")
 
-        # Port is open
-        if result == 0:
-            print(f"[+] Port {port} is open.")
-        else:
-            print(f"[-] Port {port} is unreachable.")
+else:
+    print("Invalid option. Please enter 'y' or 'n'.")
